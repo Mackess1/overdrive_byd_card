@@ -1,4 +1,4 @@
-Overdrive BYD Card
+# Overdrive BYD Card
 
 A modern, real-time Home Assistant dashboard card for BYD vehicles powered by Overdrive.
 
@@ -6,25 +6,27 @@ This project transforms raw BYD telemetry into a polished connected-car experien
 
 Designed specifically for BYD vehicles running Overdrive v12+, the card provides live telemetry, climate controls, charging information, tire monitoring, lighting status, vehicle controls, and advanced battery data in a clean modern UI.
 
-Huge Credit to Overdrive
+---
+
+# Huge Credit to Overdrive
 
 This entire project would not exist without the incredible work done by Yash Srivastava.
 
 The actual vehicle communication, telemetry access, command systems, reverse engineering, MQTT support, and Overdrive platform were created by him through the Overdrive project:
 
-Overdrive GitHub Repository
+https://github.com/yash-srivastava/Overdrive-release
 
 Overdrive is one of the most advanced open-source BYD projects currently available and enables features such as:
 
-• Real-time vehicle telemetry
-• Vehicle controls
-• Climate controls
-• MQTT integration
-• Vehicle diagnostics
-• Dashcam functionality
-• Sentry mode
-• Local HAL integration
-• Advanced BYD reverse engineering
+• Real-time vehicle telemetry  
+• Vehicle controls  
+• Climate controls  
+• MQTT integration  
+• Vehicle diagnostics  
+• Dashcam functionality  
+• Sentry mode  
+• Local HAL integration  
+• Advanced BYD reverse engineering  
 
 This Home Assistant integration and dashboard card are built specifically to extend, visualize, and integrate the amazing work already done in Overdrive.
 
@@ -32,106 +34,140 @@ Massive respect and appreciation to Yash for pushing the BYD community forward a
 
 Please support the original project and star the repository.
 
-Features
-Real-Time Vehicle Telemetry
+---
+
+# Features
+
+## Real-Time Vehicle Telemetry
 
 The card automatically displays:
 
-Feature	Description
-Battery SOC	Current battery percentage
-EV Range	Remaining driving range
-Battery Health	SOH percentage
-Power Usage	Live power draw and regen
-Speed	Vehicle speed
-Gear	Current gear
-Odometer	Total vehicle mileage
-Drive Time	Total driving hours
-Energy Consumption	Consumption over 50km
-Battery Temperature	HV battery temperature
-Outside Temperature	Ambient temperature
-Inside Temperature	Cabin temperature
-12V Voltage	Auxiliary battery voltage
-Charging Information
+| Feature | Description |
+|---|---|
+| Battery SOC | Current battery percentage |
+| EV Range | Remaining driving range |
+| Battery Health | SOH percentage |
+| Power Usage | Live power draw and regen |
+| Speed | Vehicle speed |
+| Gear | Current gear |
+| Odometer | Total vehicle mileage |
+| Drive Time | Total driving hours |
+| Energy Consumption | Consumption over 50km |
+| Battery Temperature | HV battery temperature |
+| Outside Temperature | Ambient temperature |
+| Inside Temperature | Cabin temperature |
+| 12V Voltage | Auxiliary battery voltage |
+
+---
+
+# Charging Information
 
 Supports:
 
-• AC charging
-• DC fast charging
-• Charging gun detection
-• Charging mode monitoring
-• V2L status
-• Charging state monitoring
+• AC charging  
+• DC fast charging  
+• Charging gun detection  
+• Charging mode monitoring  
+• V2L status  
+• Charging state monitoring  
 
 The card can visually distinguish:
 
-• Parked
-• Driving
-• Charging
-• DC Fast Charging
-• Offline
+• Parked  
+• Driving  
+• Charging  
+• DC Fast Charging  
+• Offline  
 
-Tire Monitoring
+---
+
+# Tire Monitoring
 
 Displays:
 
-• Individual tire pressures
-• Tire temperatures
-• Tire leak warnings
-• Tire signal status
-• Tire system health
+• Individual tire pressures  
+• Tire temperatures  
+• Tire leak warnings  
+• Tire signal status  
+• Tire system health  
 
 Supports all 4 tires independently.
 
-Climate & Cabin
+---
+
+# Climate & Cabin
 
 Supports:
 
-• AC status
-• Fan speed
-• Air cycle mode
-• Seat heating
-• Seat cooling
-• Window states
-• Sunroof position
+• AC status  
+• Fan speed  
+• Air cycle mode  
+• Seat heating  
+• Seat cooling  
+• Window states  
+• Sunroof position  
 
 Climate controls can be integrated directly into the card using MQTT vehicle commands.
 
-Lighting & Vehicle State
+---
+
+# Lighting & Vehicle State
 
 Supports:
 
-• DRLs
-• Low beams
-• High beams
-• Fog lights
-• Hazard lights
-• Turn signals
-• Door lock status
-• Seatbelt status
+• DRLs  
+• Low beams  
+• High beams  
+• Fog lights  
+• Hazard lights  
+• Turn signals  
+• Door lock status  
+• Seatbelt status  
 
-Home Assistant Integration
+---
+
+# Home Assistant Integration
 
 Works with the companion integration:
 
-Overdrive BYD Integration
+https://github.com/Mackess1/overdrive_byd
 
 The integration handles:
 
-• MQTT subscriptions
-• Entity creation
-• Vehicle commands
-• Climate entities
-• Lock controls
-• Telemetry parsing
+• MQTT subscriptions  
+• Entity creation  
+• Vehicle commands  
+• Climate entities  
+• Lock controls  
+• Telemetry parsing  
 
-MQTT Topics
-Telemetry Topic
+---
+
+# MQTT Topics
+
+## Telemetry Topic
+
+```text
 overdrive/vehicle/telemetry
-Availability Topic
+```
+
+## Availability Topic
+
+```text
 overdrive/vehicle/telemetry/availability
-Command Topic
+```
+
+## Command Topic
+
+```text
 overdrive/vehicle/command
-Example Telemetry Payload
+```
+
+---
+
+# Example Telemetry Payload
+
+```json
 {
   "soc": 92,
   "speed": 0,
@@ -151,64 +187,114 @@ Example Telemetry Payload
   "light_drl": 1,
   "sunroof_state": 1
 }
-Vehicle Commands
+```
+
+---
+
+# Vehicle Commands
 
 The card supports vehicle controls through MQTT.
 
-Turn On AC
+## Turn On AC
+
+```json
 {
   "command": "climate_on",
   "temperature": 22,
   "source": "home_assistant"
 }
-Turn Off AC
+```
+
+## Turn Off AC
+
+```json
 {
   "command": "climate_off",
   "source": "home_assistant"
 }
-Lock Vehicle
+```
+
+## Lock Vehicle
+
+```json
 {
   "command": "lock",
   "source": "home_assistant"
 }
-Unlock Vehicle
+```
+
+## Unlock Vehicle
+
+```json
 {
   "command": "unlock",
   "source": "home_assistant"
 }
-Open Trunk
+```
+
+## Open Trunk
+
+```json
 {
   "command": "open_trunk",
   "source": "home_assistant"
 }
-Installation
-HACS Installation
-Open HACS
-Go to Frontend
-Click the 3-dot menu
-Select Custom Repositories
-Add:
+```
+
+---
+
+# Installation
+
+## HACS Installation
+
+1. Open HACS  
+2. Go to Frontend  
+3. Click the 3-dot menu  
+4. Select Custom Repositories  
+5. Add:
+
+```text
 https://github.com/Mackess1/overdrive_byd_card
-Category:
+```
+
+6. Category:
+
+```text
 Dashboard
-Install the card
-Restart Home Assistant
-Manual Installation
+```
+
+7. Install the card  
+8. Restart Home Assistant  
+
+---
+
+# Manual Installation
 
 Copy:
 
+```text
 /overdrive_byd_card.js
+```
 
 Into:
 
+```text
 /config/www/
+```
 
 Then add:
 
+```yaml
 resources:
   - url: /local/overdrive_byd_card.js
     type: module
-Example Card Configuration
+```
+
+---
+
+# Example Card Configuration
+
+```yaml
 type: custom:overdrive-byd-card
 vehicle_name: Yuan Plus
 show_tyres: true
@@ -217,95 +303,108 @@ show_lights: true
 show_location: true
 show_battery_details: true
 show_cell_data: true
-Supported Vehicle Data
-Battery
+```
 
-• SOC
-• SOH
-• HV Voltage
-• Cell Voltage Max
-• Cell Voltage Min
-• Cell Voltage Delta
-• Cell Temperatures
+---
 
-Driving
+# Supported Vehicle Data
 
-• Speed
-• Gear
-• Steering Angle
-• Acceleration
-• Brake Position
-• Drive Mode
+## Battery
 
-Charging
+• SOC  
+• SOH  
+• HV Voltage  
+• Cell Voltage Max  
+• Cell Voltage Min  
+• Cell Voltage Delta  
+• Cell Temperatures  
 
-• Charging State
-• DCFC State
-• Charging Gun
-• Charging Type
-• V2L
+## Driving
 
-Climate
+• Speed  
+• Gear  
+• Steering Angle  
+• Acceleration  
+• Brake Position  
+• Drive Mode  
 
-• AC Status
-• Fan Speed
-• Air Cycle
-• Temperature Unit
-• Cabin Temperature
+## Charging
 
-Tires
+• Charging State  
+• DCFC State  
+• Charging Gun  
+• Charging Type  
+• V2L  
 
-• Pressure
-• Temperature
-• Leak Detection
-• Signal State
+## Climate
 
-Vehicle
+• AC Status  
+• Fan Speed  
+• Air Cycle  
+• Temperature Unit  
+• Cabin Temperature  
 
-• Door Locks
-• Windows
-• Sunroof
-• Lights
-• Seatbelts
-• Radar Distance
+## Tires
 
-Roadmap
+• Pressure  
+• Temperature  
+• Leak Detection  
+• Signal State  
+
+## Vehicle
+
+• Door Locks  
+• Windows  
+• Sunroof  
+• Lights  
+• Seatbelts  
+• Radar Distance  
+
+---
+
+# Roadmap
 
 Planned future features:
 
-• Live map embedding
-• Trip history
-• Charging history graphs
-• Battery degradation graphs
-• Native Android Auto style mode
-• Voice assistant controls
-• Real-time command confirmations
-• Push notifications
-• Vehicle diagnostics page
-• OTA update visibility
+• Live map embedding  
+• Trip history  
+• Charging history graphs  
+• Battery degradation graphs  
+• Native Android Auto style mode  
+• Voice assistant controls  
+• Real-time command confirmations  
+• Push notifications  
+• Vehicle diagnostics page  
+• OTA update visibility  
 
-Powered By Overdrive
+---
+
+# Powered By Overdrive
 
 Core vehicle communication and telemetry are powered by:
 
-Overdrive by Yash Srivastava
+https://github.com/yash-srivastava/Overdrive-release
 
 Please support the original project and star the repository.
 
-Credits
+---
+
+# Credits
 
 Built for the BYD and Home Assistant community.
 
 Powered by:
 
-• Home Assistant
-• MQTT
-• Overdrive
-• BYD telemetry systems
+• Home Assistant  
+• MQTT  
+• Overdrive  
+• BYD telemetry systems  
 
 Special thanks again to Yash Srivastava for the incredible Overdrive platform and the reverse engineering work that made this ecosystem possible.
 
-Disclaimer
+---
+
+# Disclaimer
 
 This project is unofficial and is not affiliated with BYD.
 
