@@ -97,6 +97,7 @@ class OverdriveBYDCard extends HTMLElement {
       entities: {},
     };
     this._openSections = this._openSections || {};
+    this._detailsOpen = this._detailsOpen ?? false;
     this.config = {
       ...defaults,
       ...config,
@@ -316,18 +317,25 @@ class OverdriveBYDCard extends HTMLElement {
 
           ${show.controls ? this.controls() : ""}
 
-          ${show.expanded ? `<div class="sections">
-            ${show.battery_detail ? this.section("Battery Detail", "mdi:battery-high", [
-              ["Capacity", this.fmt("capacity", " kWh")], ["HV Pack", this.fmt("hv_pack_v", " V")], ["Cell Max", this.fmt("cell_v_max", " V")], ["Cell Min", this.fmt("cell_v_min", " V")], ["Cell Delta", this.fmt("cell_v_delta", " V")], ["Cell Avg Temp", this.fmt("cell_t_avg", "°C")], ["12V", this.fmt("volt_12v", " V")], ["12V Level", this.value("batt_12v_level")]
-            ]) : ""}
-            ${show.tyres ? this.tyres() : ""}
-            ${show.climate ? this.section("Climate", "mdi:air-conditioner", [["AC", acOn ? "On" : "Off"], ["Fan", this.value("ac_fan")], ["Wind", this.value("ac_wind")], ["Cycle", this.value("ac_cycle")]]) : ""}
-            ${show.lights ? this.lights() : ""}
-            ${show.body ? this.section("Body", "mdi:car-door", [["Door Lock", this.value("door_lock")], ["Windows", this.value("window_open")], ["Sunroof", this.value("sunroof_state")], ["Sunroof Pos", this.value("sunroof_pos")], ["Seat Heat", this.value("seat_heat")], ["Seat Cool", this.value("seat_cool")]]) : ""}
-            ${show.charging_detail ? this.section("Charging", "mdi:ev-plug-type2", [["Charging State", this.value("charging_state")], ["Charger State", this.value("charger_state")], ["Mode", this.value("charging_mode")], ["Gun", this.value("charging_gun")], ["Type", this.value("charging_type")], ["V2L", this.isOn("charging_v2l") ? "On" : "Off"], ["DCFC", dcfc ? "On" : "Off"]]) : ""}
-            ${show.diagnostics ? this.section("Diagnostics", "mdi:chip", [["Accel", this.fmt("accel_pct", "%")], ["Brake", this.fmt("brake_pct", "%")], ["Steering", this.fmt("steering_deg", "°")], ["Energy Mode", this.value("energy_mode")], ["Op Mode", this.value("op_mode")], ["Power Level", this.value("power_level")], ["MCU", this.value("mcu_status")], ["Radar", this.value("radar_distances")]]) : ""}
-            ${show.gps ? this.section("GPS", "mdi:map-marker", [[labels.latitude, this.value("latitude")], [labels.longitude, this.value("longitude")], [labels.elevation, this.fmt("elevation", " m")]]) : ""}
-            ${show.last_update ? `<div class="last">${labels.last_update}: ${this.value("last_update", "unknown")}</div>` : ""}
+          ${show.expanded ? `<button class="detailsToggle ${this._detailsOpen ? "open" : ""}" data-details-toggle type="button">
+            <span><ha-icon icon="mdi:card-text-outline"></ha-icon>Card Details</span>
+            <span class="detailsHint">${this._detailsOpen ? "Hide" : "Show"} vehicle details</span>
+            <ha-icon class="detailsChevron" icon="mdi:chevron-down"></ha-icon>
+          </button>
+          <div class="detailsPanel" ${this._detailsOpen ? "" : "hidden"}>
+            <div class="sections">
+              ${show.battery_detail ? this.section("Battery Detail", "mdi:battery-high", [
+                ["Capacity", this.fmt("capacity", " kWh")], ["HV Pack", this.fmt("hv_pack_v", " V")], ["Cell Max", this.fmt("cell_v_max", " V")], ["Cell Min", this.fmt("cell_v_min", " V")], ["Cell Delta", this.fmt("cell_v_delta", " V")], ["Cell Avg Temp", this.fmt("cell_t_avg", "°C")], ["12V", this.fmt("volt_12v", " V")], ["12V Level", this.value("batt_12v_level")]
+              ]) : ""}
+              ${show.tyres ? this.tyres() : ""}
+              ${show.climate ? this.section("Climate", "mdi:air-conditioner", [["AC", acOn ? "On" : "Off"], ["Fan", this.value("ac_fan")], ["Wind", this.value("ac_wind")], ["Cycle", this.value("ac_cycle")]]) : ""}
+              ${show.lights ? this.lights() : ""}
+              ${show.body ? this.section("Body", "mdi:car-door", [["Door Lock", this.value("door_lock")], ["Windows", this.value("window_open")], ["Sunroof", this.value("sunroof_state")], ["Sunroof Pos", this.value("sunroof_pos")], ["Seat Heat", this.value("seat_heat")], ["Seat Cool", this.value("seat_cool")]]) : ""}
+              ${show.charging_detail ? this.section("Charging", "mdi:ev-plug-type2", [["Charging State", this.value("charging_state")], ["Charger State", this.value("charger_state")], ["Mode", this.value("charging_mode")], ["Gun", this.value("charging_gun")], ["Type", this.value("charging_type")], ["V2L", this.isOn("charging_v2l") ? "On" : "Off"], ["DCFC", dcfc ? "On" : "Off"]]) : ""}
+              ${show.diagnostics ? this.section("Diagnostics", "mdi:chip", [["Accel", this.fmt("accel_pct", "%")], ["Brake", this.fmt("brake_pct", "%")], ["Steering", this.fmt("steering_deg", "°")], ["Energy Mode", this.value("energy_mode")], ["Op Mode", this.value("op_mode")], ["Power Level", this.value("power_level")], ["MCU", this.value("mcu_status")], ["Radar", this.value("radar_distances")]]) : ""}
+              ${show.gps ? this.section("GPS", "mdi:map-marker", [[labels.latitude, this.value("latitude")], [labels.longitude, this.value("longitude")], [labels.elevation, this.fmt("elevation", " m")]]) : ""}
+              ${show.last_update ? `<div class="last">${labels.last_update}: ${this.value("last_update", "unknown")}</div>` : ""}
+            </div>
           </div>` : ""}
         </div>
       </ha-card>`;
@@ -340,6 +348,16 @@ class OverdriveBYDCard extends HTMLElement {
         else this.pressButton(action);
       });
     });
+
+    const detailsToggle = this.querySelector("[data-details-toggle]");
+    if (detailsToggle) {
+      detailsToggle.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this._detailsOpen = !this._detailsOpen;
+        this.render();
+      });
+    }
 
     this.querySelectorAll("[data-section-toggle]").forEach((el) => {
       el.addEventListener("click", (ev) => {
@@ -398,7 +416,7 @@ class OverdriveBYDCard extends HTMLElement {
   styles() { return `
     .wrap{position:relative;overflow:hidden;padding:20px;}
     .topbar{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.brand{font-size:12px;font-weight:800;letter-spacing:.18em;opacity:.7;text-transform:uppercase}.title{font-size:28px;font-weight:850;line-height:1.05}.subtitle{margin-top:6px;font-size:13px;color:var(--muted,#ffffff99)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:#888}.dot.on{background:#20ff9f;box-shadow:0 0 12px #20ff9f}.dot.off{background:#ff4d6d}.pill{padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:12px;font-weight:700;white-space:nowrap}.pill.active{background:rgba(0,245,160,.18)}
-    .hero{display:grid;grid-template-columns:110px 1fr 90px;align-items:center;gap:8px;margin:18px 0}.car{width:100%;max-height:145px;object-fit:contain;filter:drop-shadow(0 24px 22px rgba(0,0,0,.38))}.batteryRing{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ring) calc(var(--pct)*1%),rgba(255,255,255,.14) 0)}.ringInner{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;align-content:center;background:rgba(0,0,0,.30);backdrop-filter:blur(10px)}.big{font-size:25px;font-weight:900}.small{font-size:11px;opacity:.7}.range{text-align:right}.speedrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.speedrow>div{padding:12px;border-radius:18px;background:rgba(255,255,255,.10)}.speedrow b{font-size:20px}.speedrow span{display:block;font-size:11px;opacity:.65}.grid{display:grid;gap:10px}.grid.four{grid-template-columns:repeat(4,1fr)}.box{display:flex;gap:9px;align-items:center;padding:11px;border-radius:18px;background:rgba(255,255,255,.10)}.box ha-icon{--mdc-icon-size:22px}.box span{font-size:11px;opacity:.66;display:block}.box b{font-size:14px}.bars{display:grid;gap:10px;margin-top:12px}.barTop{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}.track{height:9px;border-radius:999px;background:rgba(255,255,255,.13);overflow:hidden}.track div{height:100%;border-radius:999px}.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px}.ctrl{border:none;border-radius:16px;padding:10px 8px;background:rgba(255,255,255,.13);color:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;cursor:pointer}.ctrl:active{transform:scale(.97)}.ctrl ha-icon{--mdc-icon-size:21px}.sections{display:grid;gap:10px;margin-top:14px}.section{padding:0;border-radius:22px;background:rgba(255,255,255,.10);backdrop-filter:blur(12px);overflow:hidden}.sectionHead{width:100%;border:0;background:transparent;color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;font-size:14px;font-weight:800;text-align:left}.sectionHead span{display:flex;gap:8px;align-items:center}.sectionHead ha-icon{--mdc-icon-size:19px}.section .chevron{transition:transform .22s ease;opacity:.72}.section.open .chevron{transform:rotate(180deg)}.sectionBody{padding:0 14px 14px}.sectionBody[hidden]{display:none!important}.row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid rgba(255,255,255,.08);padding:8px 0;font-size:12px}.row:first-of-type{border-top:0}.row span{opacity:.68}.row b{text-align:right;font-weight:750;word-break:break-word}.tyres{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}.tyres>div{border-radius:16px;background:rgba(0,0,0,.16);padding:10px;text-align:center}.tyres b,.tyres span,.tyres small{display:block}.tyres span{font-size:13px;font-weight:800}.tyres small{opacity:.7}.last{text-align:center;font-size:11px;opacity:.65;padding:8px}@media(max-width:480px){.hero{grid-template-columns:95px 1fr}.range{grid-column:1/3;text-align:center}.grid.four,.controls{grid-template-columns:repeat(2,1fr)}.speedrow{grid-template-columns:1fr}.tyres{grid-template-columns:repeat(2,1fr)}}
+    .hero{display:grid;grid-template-columns:110px 1fr 90px;align-items:center;gap:8px;margin:18px 0}.car{width:100%;max-height:145px;object-fit:contain;filter:drop-shadow(0 24px 22px rgba(0,0,0,.38))}.batteryRing{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ring) calc(var(--pct)*1%),rgba(255,255,255,.14) 0)}.ringInner{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;align-content:center;background:rgba(0,0,0,.30);backdrop-filter:blur(10px)}.big{font-size:25px;font-weight:900}.small{font-size:11px;opacity:.7}.range{text-align:right}.speedrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.speedrow>div{padding:12px;border-radius:18px;background:rgba(255,255,255,.10)}.speedrow b{font-size:20px}.speedrow span{display:block;font-size:11px;opacity:.65}.grid{display:grid;gap:10px}.grid.four{grid-template-columns:repeat(4,1fr)}.box{display:flex;gap:9px;align-items:center;padding:11px;border-radius:18px;background:rgba(255,255,255,.10)}.box ha-icon{--mdc-icon-size:22px}.box span{font-size:11px;opacity:.66;display:block}.box b{font-size:14px}.bars{display:grid;gap:10px;margin-top:12px}.barTop{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}.track{height:9px;border-radius:999px;background:rgba(255,255,255,.13);overflow:hidden}.track div{height:100%;border-radius:999px}.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px}.ctrl{border:none;border-radius:16px;padding:10px 8px;background:rgba(255,255,255,.13);color:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;cursor:pointer}.ctrl:active{transform:scale(.97)}.ctrl ha-icon{--mdc-icon-size:21px}.detailsToggle{width:100%;margin-top:14px;border:0;border-radius:20px;padding:14px 15px;background:rgba(255,255,255,.14);color:inherit;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;cursor:pointer;text-align:left;font-weight:850}.detailsToggle>span:first-child{display:flex;align-items:center;gap:8px}.detailsHint{font-size:11px;opacity:.65;font-weight:700}.detailsChevron{transition:transform .22s ease;opacity:.75}.detailsToggle.open .detailsChevron{transform:rotate(180deg)}.detailsPanel[hidden]{display:none!important}.sections{display:grid;gap:10px;margin-top:10px}.section{padding:0;border-radius:22px;background:rgba(255,255,255,.10);backdrop-filter:blur(12px);overflow:hidden}.sectionHead{width:100%;border:0;background:transparent;color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;font-size:14px;font-weight:800;text-align:left}.sectionHead span{display:flex;gap:8px;align-items:center}.sectionHead ha-icon{--mdc-icon-size:19px}.section .chevron{transition:transform .22s ease;opacity:.72}.section.open .chevron{transform:rotate(180deg)}.sectionBody{padding:0 14px 14px}.sectionBody[hidden]{display:none!important}.row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid rgba(255,255,255,.08);padding:8px 0;font-size:12px}.row:first-of-type{border-top:0}.row span{opacity:.68}.row b{text-align:right;font-weight:750;word-break:break-word}.tyres{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}.tyres>div{border-radius:16px;background:rgba(0,0,0,.16);padding:10px;text-align:center}.tyres b,.tyres span,.tyres small{display:block}.tyres span{font-size:13px;font-weight:800}.tyres small{opacity:.7}.last{text-align:center;font-size:11px;opacity:.65;padding:8px}@media(max-width:480px){.hero{grid-template-columns:95px 1fr}.range{grid-column:1/3;text-align:center}.grid.four,.controls{grid-template-columns:repeat(2,1fr)}.speedrow{grid-template-columns:1fr}.tyres{grid-template-columns:repeat(2,1fr)}}
   `; }
 
   getCardSize() { return 8; }
