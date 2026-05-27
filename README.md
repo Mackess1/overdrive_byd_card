@@ -1,47 +1,29 @@
 # Overdrive BYD Card
 
-A highly customizable Home Assistant dashboard card for Overdrive BYD MQTT vehicle telemetry.
+A customizable Home Assistant dashboard card for Overdrive BYD MQTT vehicle telemetry.
 
-This card is designed to work with the Overdrive BYD MQTT integration, but it can also be used with manually created Home Assistant entities.
+This updated version supports the expanded Overdrive telemetry payload, including battery, charging, tyres, AC, lights, doors, windows, seat heating/cooling, sunroof, 12V battery, HV pack/cell stats, radar, and command buttons.
 
 ## Features
 
-- Clean vehicle dashboard card
-- Visual card editor
-- Custom vehicle name
-- Custom brand name
-- Custom car image
-- Custom background colors
-- Custom background image
-- Custom font family
-- Custom card radius
-- Show or hide sections
-- Location status
-- Battery percentage
-- EV range
-- Speed
-- Odometer
-- Charging status
-- Parked status
-- Online status
-- DC fast charging status
-- Battery health
-- Battery temperature
-- Outside temperature
-- Last update
+- Vehicle overview with battery, range, speed, gear, odometer, online/parked/charging status
+- Expanded telemetry sections: battery health, HV pack, cells, 12V, tyres, AC, lights, windows/doors, seats, sunroof, charging, diagnostics
+- Optional control buttons for Home Assistant entities such as AC, lock, trunk, horn and lights
+- Visual editor support
+- Custom vehicle name, brand, image, colors, background, radius and entity prefix
 
-## Installation with HACS
+## Basic YAML
 
-1. Open HACS
-2. Go to custom repositories
-3. Add this repository URL
-4. Select category: Dashboard
-5. Install
-6. Refresh your browser
+```yaml
+type: custom:overdrive-byd-card
+name: Yuan Plus
+brand: BYD
+entity_prefix: yuan_plus
+show:
+  controls: true
+  expanded: true
+```
 
-## Manual Installation
+## Install
 
-Copy this file:
-
-```text
-overdrive-byd-card.js
+Copy `overdrive-byd-card.js` to `/config/www/community/overdrive-byd-card/` or install through HACS as a dashboard repository.
